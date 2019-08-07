@@ -1,0 +1,16 @@
+version: '3'
+services:
+  rmdataexporter:
+    build: ./docker/
+    volumes:
+      - ~/.postgresql/:/root/.postgresql/
+      - ~/.postgresql/client-key.pem:/tmp/client-key.pem
+      - ~/.config/gcloud/service-account-key.json:/gcp-credentials/service-account-key.json
+    environment:
+      DB_HOST: ${DATAEXPORT_DB_HOST}
+      DB_PORT: ${DATAEXPORT_DB_PORT}
+      DB_NAME: ${DATAEXPORT_DB_NAME}
+      DB_USERNAME: ${DATAEXPORT_DB_USERNAME}
+      DB_PASSWORD: ${DATAEXPORT_DB_PASSWORD}
+      BUCKET_NAME: ${DATAEXPORT_BUCKET_NAME}
+    command: "./run.sh"

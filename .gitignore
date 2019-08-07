@@ -1,0 +1,13 @@
+.DS_Store
+.idea/
+.vscode/
+
+# stop any temporary key files being added
+postgresql.crt
+postgresql.key
+postgresql.pk8
+client-cert.crt
+client-cert.pem
+client-key.pem
+server-ca.pem
+root.crt
