@@ -20,10 +20,11 @@ Create service account credentials for the dataexport service account and store 
 Create new connection certificates and store in your *~/.postgresql/* directory
 Ensure you are whitelisted against the test environment database.
 
-### Run the *run.sh* script, 
+### Run the test script
+Use *./runlocaltest.sh*
+
 This will set the docker-compose environment variables based on the configmaps and secrets contained within the rm cluster you are connected to. *you must be whitelisted against the database for this to work*
 
-You must also have 
 
 
 
