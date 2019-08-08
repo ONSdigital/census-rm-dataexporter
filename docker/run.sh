@@ -61,7 +61,9 @@ EOF
 echo "adding $filename.manifest to bucket $BUCKET_NAME"
 gsutil cp "$filename".manifest gs://"$BUCKET_NAME"
 
-
+# cleanup files
+rm $filename
+rm "$filename".manifest
 
 ######################################################################
 # EXPORT CASES TABLE AND UPLOAD FILE AND MANIFEST TO GCS BUCKET
@@ -104,6 +106,9 @@ EOF
 echo "adding $filename.manifest to bucket $BUCKET_NAME"
 gsutil cp "$filename".manifest gs://"$BUCKET_NAME"
 
+# cleanup files
+rm $filename
+rm "$filename".manifest
 
 
 ######################################################################
@@ -146,3 +151,7 @@ EOF
 
 echo "adding $filename.manifest to bucket $BUCKET_NAME"
 gsutil cp "$filename".manifest gs://"$BUCKET_NAME"
+
+# cleanup files
+rm $filename
+rm "$filename".manifest
