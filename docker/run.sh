@@ -44,7 +44,7 @@ cat > "$filename".manifest <<-EOF
   "schemaVersion": 1,
   "files": [
     {
-      "size": "$(stat -c%s $filename)",
+      "sizeBytes": "$(stat -c%s $filename)",
       "md5sum": "$(openssl md5 "$filename" | awk '{ print $2 }')",
       "relativePath": "./",
       "name": "$filename"
@@ -89,7 +89,7 @@ cat > "$filename".manifest <<-EOF
   "schemaVersion": 1,
   "files": [
     {
-      "size": "$(stat -c%s $filename)",
+      "sizeBytes": "$(stat -c%s $filename)",
       "md5sum": "$(openssl md5 "$filename" | awk '{ print $2 }')",
       "relativePath": "./",
       "name": "$filename"
@@ -135,7 +135,7 @@ cat > "$filename".manifest <<-EOF
   "schemaVersion": 1,
   "files": [
     {
-      "size": "$(stat -c%s $filename)",
+      "sizeBytes": "$(stat -c%s $filename)",
       "md5sum": "$(openssl md5 "$filename" | awk '{ print $2 }')",
       "relativePath": "./",
       "name": "$filename"
