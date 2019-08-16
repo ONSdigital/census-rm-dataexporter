@@ -19,6 +19,8 @@ if [[ -f /root/.postgresql/postgresql.pk8 ]]; then
   chmod 600 /tmp/client-key.pem
 fi
 
+# run all data exports in persistent volume mounted directory
+cd $PVC_MOUNT_PATH
 
 ######################################################################
 # EXPORT UAC_QID_LINK TABLE AND UPLOAD FILE AND MANIFEST TO GCS BUCKET
