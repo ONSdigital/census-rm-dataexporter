@@ -50,7 +50,7 @@ cat > "$filename".manifest <<-EOF
       "name": "$filename"
     }
   ],
-  "sourceName": "QMS",
+  "sourceName": "RM",
   "manifestCreated": "$(date +'%Y-%m-%dT%H:%M:%S').0000000Z",
   "description": "RM uac_qid_link table export",
   "dataset": "RM_uac_qid_link",
@@ -95,7 +95,7 @@ cat > "$filename".manifest <<-EOF
       "name": "$filename"
     }
   ],
-  "sourceName": "QMS",
+  "sourceName": "RM",
   "manifestCreated": "$(date +'%Y-%m-%dT%H:%M:%S').0000000Z",
   "description": "RM cases table export",
   "dataset": "RM_cases",
@@ -141,7 +141,7 @@ cat > "$filename".manifest <<-EOF
       "name": "$filename"
     }
   ],
-  "sourceName": "QMS",
+  "sourceName": "RM",
   "manifestCreated": "$(date +'%Y-%m-%dT%H:%M:%S').0000000Z",
   "description": "RM event table export",
   "dataset": "RM_event",
