@@ -55,7 +55,7 @@ cat > "$filename".manifest <<-EOF
   "sourceName": "RM",
   "manifestCreated": "$(date +'%Y-%m-%dT%H:%M:%S').0000000Z",
   "description": "RM uac_qid_link table export",
-  "dataset": "RM_uac_qid_link",
+  "dataset": "RM_cases",
   "version": 1
 }
 EOF
@@ -146,7 +146,7 @@ cat > "$filename".manifest <<-EOF
   "sourceName": "RM",
   "manifestCreated": "$(date +'%Y-%m-%dT%H:%M:%S').0000000Z",
   "description": "RM event table export",
-  "dataset": "RM_event",
+  "dataset": "RM_cases",
   "version": 1
 }
 EOF
