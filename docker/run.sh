@@ -41,7 +41,7 @@ filename=CensusResponseManagement_qid_$(date +"%Y-%m-%dT%H-%M-%S").zip
 zip "$filename" "$QID_FILE"
 
 echo "adding $filename to bucket $BUCKET_NAME"
-gsutil cp "$filename" gs://"$BUCKET_NAME"
+gsutil -q cp "$filename" gs://"$BUCKET_NAME"
 
 echo "write manifest $filename.manifest"
 
@@ -65,7 +65,7 @@ cat > "$filename".manifest <<-EOF
 EOF
 
 echo "adding $filename.manifest to bucket $BUCKET_NAME"
-gsutil cp "$filename".manifest gs://"$BUCKET_NAME"
+gsutil -q cp "$filename".manifest gs://"$BUCKET_NAME"
 
 # cleanup files
 rm $filename
@@ -89,7 +89,7 @@ filename=CensusResponseManagement_case_$(date +"%Y-%m-%dT%H-%M-%S").zip
 zip "$filename" "$CASES_FILE"
 
 echo "adding $filename to bucket $BUCKET_NAME"
-gsutil cp "$filename" gs://"$BUCKET_NAME"
+gsutil -q cp "$filename" gs://"$BUCKET_NAME"
 
 echo "write manifest $filename.manifest"
 
@@ -113,7 +113,7 @@ cat > "$filename".manifest <<-EOF
 EOF
 
 echo "adding $filename.manifest to bucket $BUCKET_NAME"
-gsutil cp "$filename".manifest gs://"$BUCKET_NAME"
+gsutil -q cp "$filename".manifest gs://"$BUCKET_NAME"
 
 # cleanup files
 rm $filename
@@ -138,7 +138,7 @@ filename=CensusResponseManagement_events_$(date +"%Y-%m-%dT%H-%M-%S").zip
 zip "$filename" "$EVENTS_FILE"
 
 echo "adding $filename to bucket $BUCKET_NAME"
-gsutil cp "$filename" gs://"$BUCKET_NAME"
+gsutil -q cp "$filename" gs://"$BUCKET_NAME"
 
 echo "write manifest $filename.manifest"
 
@@ -162,7 +162,7 @@ cat > "$filename".manifest <<-EOF
 EOF
 
 echo "adding $filename.manifest to bucket $BUCKET_NAME"
-gsutil cp "$filename".manifest gs://"$BUCKET_NAME"
+gsutil -q cp "$filename".manifest gs://"$BUCKET_NAME"
 
 # cleanup files
 rm $filename
