@@ -1,4 +1,5 @@
-FROM alpine:3.7
+FROM google/cloud-sdk:alpine
+
 RUN apk add --update \
     postgresql-client \
     openssl \
@@ -20,5 +21,3 @@ RUN apk add --update \
   && apk del build-deps \
   && rm -rf /var/cache/apk/*
 ADD run.sh run.sh
-ADD boto /root/.boto
-ENV BOTO_CONFIG /root/.boto
