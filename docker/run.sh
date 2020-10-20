@@ -36,7 +36,7 @@ echo "exporting uac_qid_link table content (no UACs)"
 QID_FILE=qid_$PERIOD_DATE.json
 
 PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/root.crt sslcert=/root/.postgresql/postgresql.crt sslkey=/tmp/client-key.pem hostaddr=$DB_HOST port=$DB_PORT user=$DB_USERNAME dbname=rm" \
--c "\copy (SELECT row_to_json(t) FROM (SELECT id,qid,caze_case_id as case_id FROM casev2.uac_qid_link where last_updated >= '$START_OF_PERIOD' and last_updated < '$END_OF_PERIOD') t) To '$QID_FILE';"
+-c "\copy (SELECT row_to_json(t) FROM (SELECT id,qid,caze_case_id as case_id,active,blank_questionnaire,ccs_case,created_date_time,last_updated FROM casev2.uac_qid_link where last_updated >= '$START_OF_PERIOD' and last_updated < '$END_OF_PERIOD') t) To '$QID_FILE';"
 
 
 echo "zipping uac_qid_link file"
@@ -133,7 +133,7 @@ echo "exporting event table content"
 EVENTS_FILE=events_$PERIOD_DATE.json
 
 PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/root.crt sslcert=/root/.postgresql/postgresql.crt sslkey=/tmp/client-key.pem hostaddr=$DB_HOST port=$DB_PORT user=$DB_USERNAME dbname=rm" \
--c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.event where event_type!='CASE_CREATED' and event_type!='UAC_UPDATED' and event_type!='SAMPLE_LOADED' and event_type!='RM_UAC_CREATED' and event_type!='PRINT_CASE_SELECTED' and rm_event_processed >= '$START_OF_PERIOD' and rm_event_processed < '$END_OF_PERIOD') t) To '$EVENTS_FILE';"
+-c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.event where event_type!='CASE_CREATED' and event_type!='UAC_UPDATED' and event_type!='SAMPLE_LOADED' and event_type!='RM_UAC_CREATED' and rm_event_processed >= '$START_OF_PERIOD' and rm_event_processed < '$END_OF_PERIOD') t) To '$EVENTS_FILE';"
 
 
 echo "zipping event file"
