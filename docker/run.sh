@@ -39,17 +39,33 @@ PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/ro
 -c "\copy (SELECT row_to_json(t) FROM (SELECT id,qid,caze_case_id as case_id FROM casev2.uac_qid_link where last_updated >= '$START_OF_PERIOD' and last_updated < '$END_OF_PERIOD') t) To '$QID_FILE';"
 
 
-echo "zipping uac_qid_link file"
+if [ -n "$DATAEXPORT_MI_BUCKET_NAME" ]
+then
+      echo "$DATAEXPORT_MI_BUCKET_NAME is empty"
+else
+    echo "adding uac_qid_link file $QID_FILE to bucket $DATAEXPORT_MI_BUCKET_NAME"
+    gsutil -q cp "$QID_FILE" gs://"$DATAEXPORT_MI_BUCKET_NAME"
+fi
 
-filename=CensusResponseManagement_qid_$PERIOD_DATE.zip
-zip "$filename" "$QID_FILE"
 
-echo "adding $filename to bucket $BUCKET_NAME"
-gsutil -q cp "$filename" gs://"$BUCKET_NAME"
+if [ -n "$DATAEXPORT_BUCKET_NAME" ]
+then
+      echo "$DATAEXPORT_BUCKET_NAME is empty"
+else
+  filename=CensusResponseManagement_qid_$PERIOD_DATE.zip
+  zip "$filename" "$QID_FILE"
 
-echo "write manifest $filename.manifest"
+  echo "zipping uac_qid_link file"
 
-cat > "$filename".manifest <<-EOF
+  filename=CensusResponseManagement_qid_$PERIOD_DATE.zip
+  zip "$filename" "$QID_FILE"
+
+  echo "adding $filename to bucket $DATAEXPORT_BUCKET_NAME"
+  gsutil -q cp "$filename" gs://"$DATAEXPORT_BUCKET_NAME"
+
+  echo "write manifest $filename.manifest"
+
+  cat > "$filename".manifest <<-EOF
 {
   "schemaVersion": 1,
   "files": [
@@ -68,12 +84,14 @@ cat > "$filename".manifest <<-EOF
 }
 EOF
 
-echo "adding $filename.manifest to bucket $BUCKET_NAME"
-gsutil -q cp "$filename".manifest gs://"$BUCKET_NAME"
 
-# cleanup files
-rm $filename
-rm "$filename".manifest
+  echo "adding $filename.manifest to bucket $DATAEXPORT_BUCKET_NAME"
+  gsutil -q cp "$filename".manifest gs://"$DATAEXPORT_BUCKET_NAME"
+
+  # cleanup files
+  rm $filename
+  rm "$filename".manifest
+fi
 
 ######################################################################
 # EXPORT CASES TABLE AND UPLOAD FILE AND MANIFEST TO GCS BUCKET
@@ -87,17 +105,31 @@ PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/ro
 -c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.cases where last_updated >= '$START_OF_PERIOD' and last_updated < '$END_OF_PERIOD') t) To '$CASES_FILE';"
 
 
-echo "zipping cases file"
+if [ -n "$DATAEXPORT_MI_BUCKET_NAME" ]
+then
+      echo "$DATAEXPORT_MI_BUCKET_NAME is empty"
+else
+    echo "adding cases file $CASES_FILE to bucket $DATAEXPORT_MI_BUCKET_NAME"
+    gsutil -q cp "$CASES_FILE" gs://"$DATAEXPORT_MI_BUCKET_NAME"
+fi
 
-filename=CensusResponseManagement_case_$PERIOD_DATE.zip
-zip "$filename" "$CASES_FILE"
 
-echo "adding $filename to bucket $BUCKET_NAME"
-gsutil -q cp "$filename" gs://"$BUCKET_NAME"
+if [ -n "$DATAEXPORT_BUCKET_NAME" ]
+then
+      echo "$DATAEXPORT_BUCKET_NAME is empty"
+else
 
-echo "write manifest $filename.manifest"
+  echo "zipping cases file"
 
-cat > "$filename".manifest <<-EOF
+  filename=CensusResponseManagement_case_$PERIOD_DATE.zip
+  zip "$filename" "$CASES_FILE"
+
+  echo "adding $filename to bucket $DATAEXPORT_BUCKET_NAME"
+  gsutil -q cp "$filename" gs://"$DATAEXPORT_BUCKET_NAME"
+
+  echo "write manifest $filename.manifest"
+
+  cat > "$filename".manifest <<-EOF
 {
   "schemaVersion": 1,
   "files": [
@@ -116,13 +148,13 @@ cat > "$filename".manifest <<-EOF
 }
 EOF
 
-echo "adding $filename.manifest to bucket $BUCKET_NAME"
-gsutil -q cp "$filename".manifest gs://"$BUCKET_NAME"
+  echo "adding $filename.manifest to bucket $DATAEXPORT_BUCKET_NAME"
+  gsutil -q cp "$filename".manifest gs://"$DATAEXPORT_BUCKET_NAME"
 
-# cleanup files
-rm $filename
-rm "$filename".manifest
-
+  # cleanup files
+  rm $filename
+  rm "$filename".manifest
+fi
 
 ######################################################################
 # EXPORT EVENT TABLE AND UPLOAD FILE AND MANIFEST TO GCS BUCKET
@@ -136,17 +168,30 @@ PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/ro
 -c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.event where event_type!='CASE_CREATED' and event_type!='UAC_UPDATED' and event_type!='SAMPLE_LOADED' and event_type!='RM_UAC_CREATED' and rm_event_processed >= '$START_OF_PERIOD' and rm_event_processed < '$END_OF_PERIOD') t) To '$EVENTS_FILE';"
 
 
-echo "zipping event file"
+if [ -n "$DATAEXPORT_MI_BUCKET_NAME" ]
+then
+      echo "$DATAEXPORT_MI_BUCKET_NAME is empty"
+else
+    echo "adding cases file $EVENTS_FILE to bucket $DATAEXPORT_MI_BUCKET_NAME"
+    gsutil -q cp "$EVENTS_FILE" gs://"$DATAEXPORT_MI_BUCKET_NAME"
+fi
 
-filename=CensusResponseManagement_events_$PERIOD_DATE.zip
-zip "$filename" "$EVENTS_FILE"
 
-echo "adding $filename to bucket $BUCKET_NAME"
-gsutil -q cp "$filename" gs://"$BUCKET_NAME"
+if [ -n "$DATAEXPORT_BUCKET_NAME" ]
+then
+      echo "$DATAEXPORT_BUCKET_NAME is empty"
+else
+  echo "zipping event file"
 
-echo "write manifest $filename.manifest"
+  filename=CensusResponseManagement_events_$PERIOD_DATE.zip
+  zip "$filename" "$EVENTS_FILE"
 
-cat > "$filename".manifest <<-EOF
+  echo "adding $filename to bucket $DATAEXPORT_BUCKET_NAME"
+  gsutil -q cp "$filename" gs://"$DATAEXPORT_BUCKET_NAME"
+
+  echo "write manifest $filename.manifest"
+
+  cat > "$filename".manifest <<-EOF
 {
   "schemaVersion": 1,
   "files": [
@@ -165,9 +210,10 @@ cat > "$filename".manifest <<-EOF
 }
 EOF
 
-echo "adding $filename.manifest to bucket $BUCKET_NAME"
-gsutil -q cp "$filename".manifest gs://"$BUCKET_NAME"
+  echo "adding $filename.manifest to bucket $DATAEXPORT_BUCKET_NAME"
+  gsutil -q cp "$filename".manifest gs://"$DATAEXPORT_BUCKET_NAME"
 
-# cleanup files
-rm $filename
-rm "$filename".manifest
+  # cleanup files
+  rm $filename
+  rm "$filename".manifest
+fi
