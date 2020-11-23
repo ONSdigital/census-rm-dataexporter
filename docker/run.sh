@@ -39,7 +39,7 @@ PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/ro
 -c "\copy (SELECT row_to_json(t) FROM (SELECT id,qid,caze_case_id as case_id FROM casev2.uac_qid_link where last_updated >= '$START_OF_PERIOD' and last_updated < '$END_OF_PERIOD') t) To '$QID_FILE';"
 
 
-if [ -n "$DATAEXPORT_MI_BUCKET_NAME" ]
+if [ -z "$DATAEXPORT_MI_BUCKET_NAME" ]
 then
       echo "$DATAEXPORT_MI_BUCKET_NAME is empty"
 else
@@ -48,12 +48,10 @@ else
 fi
 
 
-if [ -n "$DATAEXPORT_BUCKET_NAME" ]
+if [ -z "$DATAEXPORT_BUCKET_NAME" ]
 then
       echo "$DATAEXPORT_BUCKET_NAME is empty"
 else
-  filename=CensusResponseManagement_qid_$PERIOD_DATE.zip
-  zip "$filename" "$QID_FILE"
 
   echo "zipping uac_qid_link file"
 
@@ -88,10 +86,12 @@ EOF
   echo "adding $filename.manifest to bucket $DATAEXPORT_BUCKET_NAME"
   gsutil -q cp "$filename".manifest gs://"$DATAEXPORT_BUCKET_NAME"
 
-  # cleanup files
-  rm $filename
-  rm "$filename".manifest
 fi
+
+# cleanup files
+rm $QID_FILE
+rm $filename
+rm "$filename".manifest
 
 ######################################################################
 # EXPORT CASES TABLE AND UPLOAD FILE AND MANIFEST TO GCS BUCKET
@@ -105,7 +105,7 @@ PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/ro
 -c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.cases where last_updated >= '$START_OF_PERIOD' and last_updated < '$END_OF_PERIOD') t) To '$CASES_FILE';"
 
 
-if [ -n "$DATAEXPORT_MI_BUCKET_NAME" ]
+if [ -z "$DATAEXPORT_MI_BUCKET_NAME" ]
 then
       echo "$DATAEXPORT_MI_BUCKET_NAME is empty"
 else
@@ -114,7 +114,7 @@ else
 fi
 
 
-if [ -n "$DATAEXPORT_BUCKET_NAME" ]
+if [ -z "$DATAEXPORT_BUCKET_NAME" ]
 then
       echo "$DATAEXPORT_BUCKET_NAME is empty"
 else
@@ -151,10 +151,12 @@ EOF
   echo "adding $filename.manifest to bucket $DATAEXPORT_BUCKET_NAME"
   gsutil -q cp "$filename".manifest gs://"$DATAEXPORT_BUCKET_NAME"
 
-  # cleanup files
-  rm $filename
-  rm "$filename".manifest
 fi
+
+# cleanup files
+rm $CASES_FILE
+rm $filename
+rm "$filename".manifest
 
 ######################################################################
 # EXPORT EVENT TABLE AND UPLOAD FILE AND MANIFEST TO GCS BUCKET
@@ -168,16 +170,16 @@ PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/ro
 -c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.event where event_type!='CASE_CREATED' and event_type!='UAC_UPDATED' and event_type!='SAMPLE_LOADED' and event_type!='RM_UAC_CREATED' and rm_event_processed >= '$START_OF_PERIOD' and rm_event_processed < '$END_OF_PERIOD') t) To '$EVENTS_FILE';"
 
 
-if [ -n "$DATAEXPORT_MI_BUCKET_NAME" ]
+if [ -z "$DATAEXPORT_MI_BUCKET_NAME" ]
 then
       echo "$DATAEXPORT_MI_BUCKET_NAME is empty"
 else
-    echo "adding cases file $EVENTS_FILE to bucket $DATAEXPORT_MI_BUCKET_NAME"
+    echo "adding event file $EVENTS_FILE to bucket $DATAEXPORT_MI_BUCKET_NAME"
     gsutil -q cp "$EVENTS_FILE" gs://"$DATAEXPORT_MI_BUCKET_NAME"
 fi
 
 
-if [ -n "$DATAEXPORT_BUCKET_NAME" ]
+if [ -z "$DATAEXPORT_BUCKET_NAME" ]
 then
       echo "$DATAEXPORT_BUCKET_NAME is empty"
 else
@@ -213,7 +215,9 @@ EOF
   echo "adding $filename.manifest to bucket $DATAEXPORT_BUCKET_NAME"
   gsutil -q cp "$filename".manifest gs://"$DATAEXPORT_BUCKET_NAME"
 
-  # cleanup files
-  rm $filename
-  rm "$filename".manifest
 fi
+
+# cleanup files
+rm $EVENTS_FILE
+rm $filename
+rm "$filename".manifest
