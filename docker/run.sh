@@ -41,7 +41,7 @@ PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/ro
 
 if [ -z "$DATAEXPORT_MI_BUCKET_NAME" ]
 then
-      echo "$DATAEXPORT_MI_BUCKET_NAME is empty"
+      echo "$DATAEXPORT_MI_BUCKET_NAME is not set"
 else
     echo "adding uac_qid_link file $QID_FILE to bucket $DATAEXPORT_MI_BUCKET_NAME"
     gsutil -q cp "$QID_FILE" gs://"$DATAEXPORT_MI_BUCKET_NAME"
@@ -50,7 +50,7 @@ fi
 
 if [ -z "$DATAEXPORT_BUCKET_NAME" ]
 then
-      echo "$DATAEXPORT_BUCKET_NAME is empty"
+      echo "$DATAEXPORT_BUCKET_NAME is not set"
 else
 
   echo "zipping uac_qid_link file"
@@ -86,12 +86,13 @@ EOF
   echo "adding $filename.manifest to bucket $DATAEXPORT_BUCKET_NAME"
   gsutil -q cp "$filename".manifest gs://"$DATAEXPORT_BUCKET_NAME"
 
+  # cleanup files
+  rm "$filename".manifest
+  rm $filename
 fi
 
-# cleanup files
+# cleanup file
 rm $QID_FILE
-rm $filename
-rm "$filename".manifest
 
 ######################################################################
 # EXPORT CASES TABLE AND UPLOAD FILE AND MANIFEST TO GCS BUCKET
@@ -107,7 +108,7 @@ PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/ro
 
 if [ -z "$DATAEXPORT_MI_BUCKET_NAME" ]
 then
-      echo "$DATAEXPORT_MI_BUCKET_NAME is empty"
+      echo "$DATAEXPORT_MI_BUCKET_NAME is not set"
 else
     echo "adding cases file $CASES_FILE to bucket $DATAEXPORT_MI_BUCKET_NAME"
     gsutil -q cp "$CASES_FILE" gs://"$DATAEXPORT_MI_BUCKET_NAME"
@@ -116,7 +117,7 @@ fi
 
 if [ -z "$DATAEXPORT_BUCKET_NAME" ]
 then
-      echo "$DATAEXPORT_BUCKET_NAME is empty"
+      echo "$DATAEXPORT_BUCKET_NAME is not set"
 else
 
   echo "zipping cases file"
@@ -151,12 +152,13 @@ EOF
   echo "adding $filename.manifest to bucket $DATAEXPORT_BUCKET_NAME"
   gsutil -q cp "$filename".manifest gs://"$DATAEXPORT_BUCKET_NAME"
 
+  # cleanup files
+  rm $filename
+  rm "$filename".manifest
 fi
 
-# cleanup files
+# cleanup file
 rm $CASES_FILE
-rm $filename
-rm "$filename".manifest
 
 ######################################################################
 # EXPORT EVENT TABLE AND UPLOAD FILE AND MANIFEST TO GCS BUCKET
@@ -172,7 +174,7 @@ PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/ro
 
 if [ -z "$DATAEXPORT_MI_BUCKET_NAME" ]
 then
-      echo "$DATAEXPORT_MI_BUCKET_NAME is empty"
+      echo "$DATAEXPORT_MI_BUCKET_NAME is not set"
 else
     echo "adding event file $EVENTS_FILE to bucket $DATAEXPORT_MI_BUCKET_NAME"
     gsutil -q cp "$EVENTS_FILE" gs://"$DATAEXPORT_MI_BUCKET_NAME"
@@ -181,7 +183,7 @@ fi
 
 if [ -z "$DATAEXPORT_BUCKET_NAME" ]
 then
-      echo "$DATAEXPORT_BUCKET_NAME is empty"
+      echo "$DATAEXPORT_BUCKET_NAME is not set"
 else
   echo "zipping event file"
 
@@ -215,9 +217,10 @@ EOF
   echo "adding $filename.manifest to bucket $DATAEXPORT_BUCKET_NAME"
   gsutil -q cp "$filename".manifest gs://"$DATAEXPORT_BUCKET_NAME"
 
+  # cleanup files
+  rm $filename
+  rm "$filename".manifest
 fi
 
-# cleanup files
+# cleanup file
 rm $EVENTS_FILE
-rm $filename
-rm "$filename".manifest
