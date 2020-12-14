@@ -14,7 +14,7 @@ if [ -z "$START_DATE" ]; then
   START_OF_PERIOD=$(date -d@"$(( `date -u +%s`-86400))" "+%Y-%m-%d 00:00:00")
 else
   START_OF_PERIOD="$START_DATE 00:00:00"
-  PERIOD_DATE="${START_DATE}_initial_export"
+  PERIOD_DATE="${START_DATE}_to_${END_DATE}_initial_export"
 fi
 
 if [ -z "$END_DATE" ]; then
