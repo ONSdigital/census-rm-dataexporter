@@ -8,11 +8,20 @@ set -o nounset
 # uncomment for trace
 # set -o xtrace
 
-
 PERIOD_DATE=$(date -u -d@"$(( `date -u +%s`-86400))" "+%Y-%m-%d")
-START_OF_PERIOD=$(date -d@"$(( `date -u +%s`-86400))" "+%Y-%m-%d 00:00:00")
-END_OF_PERIOD=$(date -u "+%Y-%m-%d 00:00:00")
 
+if [ -z "$START_DATE" ]; then
+  START_OF_PERIOD=$(date -d@"$(( `date -u +%s`-86400))" "+%Y-%m-%d 00:00:00")
+else
+  START_OF_PERIOD="$START_DATE 00:00:00"
+  PERIOD_DATE="${START_DATE}_to_${END_DATE}_initial_export"
+fi
+
+if [ -z "$END_DATE" ]; then
+  END_OF_PERIOD=$(date -u "+%Y-%m-%d 00:00:00")
+else
+  END_OF_PERIOD="$END_DATE 23:59:59.9999"
+fi
 
 ############################################################################
 # PREPARE POSTGRES CERTIFICATES
@@ -207,6 +216,8 @@ EOF
   rm $filename
   rm "$filename".manifest
 fi
+
+echo "file export complete"
 
 # cleanup file
 rm $EVENTS_FILE
