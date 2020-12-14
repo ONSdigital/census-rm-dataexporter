@@ -20,7 +20,7 @@ fi
 if [ -z "$END_DATE" ]; then
   END_OF_PERIOD=$(date -u "+%Y-%m-%d 00:00:00")
 else
-  END_OF_PERIOD="$END_DATE 00:00:00"
+  END_OF_PERIOD="$END_DATE 23:59:59.9999"
 fi
 
 ############################################################################
