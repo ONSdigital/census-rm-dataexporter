@@ -5,7 +5,7 @@ RUN apk add --update \
     openssl \
     zip \
     bash \
-    python \
+    python3 \
     py-pip \
     py-cffi \
     py-cryptography \
@@ -13,7 +13,7 @@ RUN apk add --update \
   && apk add --virtual build-deps \
     gcc \
     libffi-dev \
-    python-dev \
+    python3-dev \
     linux-headers \
     musl-dev \
     openssl-dev \
