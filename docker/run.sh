@@ -4,7 +4,7 @@ echo "running rm-dataexporter job $(date)"
 # exit on errors, including unset variables (nounset)
 set -o errexit  
 set -o pipefail
-set -o nounset
+# set -o nounset
 # uncomment for trace
 # set -o xtrace
 
