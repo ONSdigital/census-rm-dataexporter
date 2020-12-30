@@ -10,17 +10,21 @@ set -o pipefail
 
 PERIOD_DATE=$(date -u -d@"$(( `date -u +%s`-86400))" "+%Y-%m-%d")
 
-if [ -z "$START_DATE" ]; then
-  START_OF_PERIOD=$(date -d@"$(( `date -u +%s`-86400))" "+%Y-%m-%d 00:00:00")
+if [ -z "$START_DATETIME" ]; then
+  START_DATETIME=$(date -d@"$(( `date -u +%s`-86400))" "+%Y-%m-%dT00:00:00")
+  echo "START_DATETIME: ${START_DATETIME} [default]"
 else
-  START_OF_PERIOD="$START_DATE 00:00:00"
-  PERIOD_DATE="${START_DATE}_to_${END_DATE}_initial_export"
+  echo "START_DATETIME: ${START_DATETIME}"
 fi
 
-if [ -z "$END_DATE" ]; then
-  END_OF_PERIOD=$(date -u "+%Y-%m-%d 00:00:00")
+if [ -z "$END_DATETIME" ]; then
+  END_DATETIME=$(date -u "+%Y-%m-%dT00:00:00")
+  echo "END_DATETIME: ${END_DATETIME} [default]"
 else
-  END_OF_PERIOD="$END_DATE 23:59:59.9999"
+  echo "END_DATETIME: ${END_DATETIME}"
+
+  # file naming to indicate between dates
+  PERIOD_DATE="${START_DATETIME}_to_${END_DATETIME}"
 fi
 
 ############################################################################
@@ -45,7 +49,7 @@ echo "exporting uac_qid_link table content (no UACs)"
 QID_FILE=qid_$PERIOD_DATE.json
 
 PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/root.crt sslcert=/root/.postgresql/postgresql.crt sslkey=/tmp/client-key.pem hostaddr=$DB_HOST port=$DB_PORT user=$DB_USERNAME dbname=rm" \
--c "\copy (SELECT row_to_json(t) FROM (SELECT id,qid,caze_case_id as case_id,active,blank_questionnaire,ccs_case,created_date_time,last_updated FROM casev2.uac_qid_link where last_updated >= '$START_OF_PERIOD' and last_updated < '$END_OF_PERIOD') t) To '$QID_FILE';"
+-c "\copy (SELECT row_to_json(t) FROM (SELECT id,qid,caze_case_id as case_id,active,blank_questionnaire,ccs_case,created_date_time,last_updated FROM casev2.uac_qid_link where last_updated >= '$START_DATETIME' and last_updated < '$END_DATETIME') t) To '$QID_FILE';"
 
 
 if [ -n "$DATAEXPORT_MI_BUCKET_NAME" ]
@@ -107,7 +111,7 @@ echo "exporting cases table content"
 CASES_FILE=cases_$PERIOD_DATE.json
 
 PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/root.crt sslcert=/root/.postgresql/postgresql.crt sslkey=/tmp/client-key.pem hostaddr=$DB_HOST port=$DB_PORT user=$DB_USERNAME dbname=rm" \
--c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.cases where last_updated >= '$START_OF_PERIOD' and last_updated < '$END_OF_PERIOD') t) To '$CASES_FILE';"
+-c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.cases where last_updated >= '$START_DATETIME' and last_updated < '$END_DATETIME') t) To '$CASES_FILE';"
 
 
 if [ -n "$DATAEXPORT_MI_BUCKET_NAME" ]
@@ -168,7 +172,7 @@ echo "exporting event table content"
 EVENTS_FILE=events_$PERIOD_DATE.json
 
 PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/root.crt sslcert=/root/.postgresql/postgresql.crt sslkey=/tmp/client-key.pem hostaddr=$DB_HOST port=$DB_PORT user=$DB_USERNAME dbname=rm" \
--c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.event where event_type!='CASE_CREATED' and event_type!='UAC_UPDATED' and event_type!='SAMPLE_LOADED' and event_type!='RM_UAC_CREATED' and rm_event_processed >= '$START_OF_PERIOD' and rm_event_processed < '$END_OF_PERIOD') t) To '$EVENTS_FILE';"
+-c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.event where event_type!='CASE_CREATED' and event_type!='UAC_UPDATED' and event_type!='SAMPLE_LOADED' and event_type!='RM_UAC_CREATED' and rm_event_processed >= '$START_DATETIME' and rm_event_processed < '$END_DATETIME') t) To '$EVENTS_FILE';"
 
 
 if [ -n "$DATAEXPORT_MI_BUCKET_NAME" ]
