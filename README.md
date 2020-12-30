@@ -1,9 +1,18 @@
 # census-rm-data-exporter
-The Data Exporter is a scheduled batch job that runs once a day and exports a full set of case, event and qid information from the case database. 
+The Data Exporter is a scheduled batch job that runs once a day via a crontab job, or for a given start & end datetime. The data exporter exports a full set of case, event and qid information from the case database. 
 The data is exported in JSON format, zipped up and stored in a GCS bucket where it will be collected and sent downstream by MiNiFi.
 
 ## Running locally
-The container is intended to be run within Kubernetes as a cronjob (see census-rm-kubernetes/optional folder)
+The container is intended to be run within Kubernetes either as a cronjob (which will be run for the previous day as default), or with a start/end datetime.
+To run with a start/end datetime, connect to the one-off dataexport pod with bash, then run the job as follows:
+```
+START_DATETIME=<YYYY-MM-DDTHH:MM:SS> END_DATETIME=<YYYY-MM-DD:HH:MM:SS> ./run.sh
+```
+
+For example:
+```
+START_DATETIME=2020-12-01T00:00:00 END_DATETIME=2020-12-03T23:59:59.999999 ./run.sh
+```
 
 ### connect to an RM test kubernetes cluster
 To test changes locally *connect to an existing RM test cluster* configured to support the dataexporter.
