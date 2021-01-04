@@ -6,7 +6,7 @@ The data is exported in JSON format, zipped up and stored in a GCS bucket where 
 The container is intended to be run within Kubernetes either as a cronjob (which will be run for the previous day as default), or with a start/end datetime.
 To run with a start/end datetime, connect to the one-off dataexport pod with bash, then run the job as follows:
 ```
-START_DATETIME=<YYYY-MM-DDTHH:MM:SS> END_DATETIME=<YYYY-MM-DD:HH:MM:SS> ./run.sh
+START_DATETIME=<YYYY-MM-DDTHH:MM:SS> END_DATETIME=<YYYY-MM-DDTHH:MM:SS> ./run.sh
 ```
 
 For example:
@@ -33,7 +33,6 @@ Ensure you are whitelisted against the test environment database.
 Use *./runlocaltest.sh*
 
 This will set the docker-compose environment variables based on the configmaps and secrets contained within the rm cluster you are connected to. *you must be whitelisted against the database for this to work*
-
 
 
 
