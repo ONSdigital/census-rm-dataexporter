@@ -63,8 +63,8 @@ if [ -n "$DATAEXPORT_BUCKET_NAME" ]
 then
   echo "zipping uac_qid_link file"
 
-  filename=CensusResponseManagement_qid_$PERIOD_DATE.zip
-  zip "$filename" "$QID_FILE"
+  filename=CensusResponseManagement_qid_$PERIOD_DATE.gz
+  gzip -c "$QID_FILE" > "$filename"
 
   echo "adding $filename to bucket $DATAEXPORT_BUCKET_NAME"
   gsutil -q cp "$filename" gs://"$DATAEXPORT_BUCKET_NAME"
@@ -125,8 +125,8 @@ if [ -n "$DATAEXPORT_BUCKET_NAME" ]
 then
   echo "zipping cases file"
 
-  filename=CensusResponseManagement_case_$PERIOD_DATE.zip
-  zip "$filename" "$CASES_FILE"
+  filename=CensusResponseManagement_case_$PERIOD_DATE.gz
+  gzip -c "$CASES_FILE" > "$filename"
 
   echo "adding $filename to bucket $DATAEXPORT_BUCKET_NAME"
   gsutil -q cp "$filename" gs://"$DATAEXPORT_BUCKET_NAME"
@@ -186,8 +186,8 @@ if [ -n "$DATAEXPORT_BUCKET_NAME" ]
 then
   echo "zipping event file"
 
-  filename=CensusResponseManagement_events_$PERIOD_DATE.zip
-  zip "$filename" "$EVENTS_FILE"
+  filename=CensusResponseManagement_events_$PERIOD_DATE.gz
+  gzip -c "$EVENTS_FILE" > "$filename"
 
   echo "adding $filename to bucket $DATAEXPORT_BUCKET_NAME"
   gsutil -q cp "$filename" gs://"$DATAEXPORT_BUCKET_NAME"
