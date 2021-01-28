@@ -8,7 +8,7 @@ set -o pipefail
 # uncomment for trace
 # set -o xtrace
 
-PERIOD_DATE=$(date -u -d@"$(( `date -u +%s`-86400))" "+%Y-%m-%d")
+FILENAME_DATE=$(date -u -d@"$(( `date -u +%s`-86400))" "+%Y-%m-%d")
 
 if [ -z "$START_DATETIME" ]; then
   START_DATETIME=$(date -d@"$(( `date -u +%s`-86400))" "+%Y-%m-%dT00:00:00")
@@ -24,8 +24,14 @@ else
   echo "END_DATETIME: ${END_DATETIME}"
 
   # file naming to indicate between dates
-  PERIOD_DATE="${START_DATETIME}_to_${END_DATETIME}"
+  FILENAME_DATE="${START_DATETIME}_to_${END_DATETIME}"
 fi
+
+############################################################################
+# REPLACE COLONS IN THE FILENAME DATE
+# Some of the consuming systems can't handle colons in filenames so we need to sanitise the date strings
+############################################################################
+FILENAME_DATE=${FILENAME_DATE//:/-}
 
 ############################################################################
 # PREPARE POSTGRES CERTIFICATES
@@ -46,7 +52,7 @@ cd $PVC_MOUNT_PATH
 echo "exporting uac_qid_link table content (no UACs)"
 
 
-QID_FILE=qid_$PERIOD_DATE.json
+QID_FILE=qid_$FILENAME_DATE.json
 
 PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/root.crt sslcert=/root/.postgresql/postgresql.crt sslkey=/tmp/client-key.pem hostaddr=$DB_HOST port=$DB_PORT user=$DB_USERNAME dbname=rm" \
 -c "\copy (SELECT row_to_json(t) FROM (SELECT id,qid,caze_case_id as case_id,active,blank_questionnaire,ccs_case,created_date_time,last_updated FROM casev2.uac_qid_link where last_updated >= '$START_DATETIME' and last_updated < '$END_DATETIME') t) To '$QID_FILE';"
@@ -63,7 +69,7 @@ if [ -n "$DATAEXPORT_BUCKET_NAME" ]
 then
   echo "zipping uac_qid_link file"
 
-  filename=CensusResponseManagement_qid_$PERIOD_DATE.gz
+  filename=CensusResponseManagement_qid_$FILENAME_DATE.gz
   gzip -c "$QID_FILE" > "$filename"
 
   echo "adding $filename to bucket $DATAEXPORT_BUCKET_NAME"
@@ -108,7 +114,7 @@ rm $QID_FILE
 echo "exporting cases table content"
 
 
-CASES_FILE=cases_$PERIOD_DATE.json
+CASES_FILE=cases_$FILENAME_DATE.json
 
 PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/root.crt sslcert=/root/.postgresql/postgresql.crt sslkey=/tmp/client-key.pem hostaddr=$DB_HOST port=$DB_PORT user=$DB_USERNAME dbname=rm" \
 -c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.cases where last_updated >= '$START_DATETIME' and last_updated < '$END_DATETIME') t) To '$CASES_FILE';"
@@ -125,7 +131,7 @@ if [ -n "$DATAEXPORT_BUCKET_NAME" ]
 then
   echo "zipping cases file"
 
-  filename=CensusResponseManagement_case_$PERIOD_DATE.gz
+  filename=CensusResponseManagement_case_$FILENAME_DATE.gz
   gzip -c "$CASES_FILE" > "$filename"
 
   echo "adding $filename to bucket $DATAEXPORT_BUCKET_NAME"
@@ -169,7 +175,7 @@ rm $CASES_FILE
 echo "exporting event table content"
 
 
-EVENTS_FILE=events_$PERIOD_DATE.json
+EVENTS_FILE=events_$FILENAME_DATE.json
 
 PGPASSWORD=$DB_PASSWORD psql "sslmode=verify-ca sslrootcert=/root/.postgresql/root.crt sslcert=/root/.postgresql/postgresql.crt sslkey=/tmp/client-key.pem hostaddr=$DB_HOST port=$DB_PORT user=$DB_USERNAME dbname=rm" \
 -c "\copy (SELECT row_to_json(t) FROM (SELECT * FROM casev2.event where event_type!='CASE_CREATED' and event_type!='UAC_UPDATED' and event_type!='SAMPLE_LOADED' and event_type!='RM_UAC_CREATED' and rm_event_processed >= '$START_DATETIME' and rm_event_processed < '$END_DATETIME') t) To '$EVENTS_FILE';"
@@ -186,7 +192,7 @@ if [ -n "$DATAEXPORT_BUCKET_NAME" ]
 then
   echo "zipping event file"
 
-  filename=CensusResponseManagement_events_$PERIOD_DATE.gz
+  filename=CensusResponseManagement_events_$FILENAME_DATE.gz
   gzip -c "$EVENTS_FILE" > "$filename"
 
   echo "adding $filename to bucket $DATAEXPORT_BUCKET_NAME"
